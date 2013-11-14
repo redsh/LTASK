@@ -42,9 +42,9 @@ def run_server(params,clspath,upload_path):
 	bottle.run(host='0.0.0.0', port=1988)
 
 	
-def run_client(server_url):
+def run_client(server_url,options):
 
-	open('client.pid','w').write('%d\n'%os.getpid())
+	#open('client.pid','w').write('%d\n'%os.getpid())
 
 	while True:
 	
@@ -60,10 +60,14 @@ def run_client(server_url):
 			break
 			
 		if len(js) == 0:
-			print('no tasks from %s, retrying..'%server_url)
-			time.sleep(0.5) #! throttling if no work
-			continue	
-	
+			if options.retry_if_empty:
+				print('no tasks from %s, retrying..'%server_url)
+				time.sleep(0.5) #! throttling if no work
+				continue	
+			else:
+				print('done!')
+				return
+				
 		C = js['class_path']
 		P = js['params']
 		
@@ -96,9 +100,9 @@ def run_client(server_url):
 def main_((options,args)):
 	print (options,args)
 	if options.tunnel:
-		print 'ssh -NfL 1988:localhost:1988 %s' % args[0]
-		os.system('ssh -NfL 1988:localhost:1988 %s' % args[0])
-		args[0] = 'http://localhost:1988'
+		print 'ssh -NfL 19880:localhost:1988 %s' % args[0]
+		os.system('ssh -NfL 19880:localhost:1988 %s' % args[0])
+		args[0] = 'http://localhost:19880'
 
 	if options.deploy:
 		import paramiko
@@ -153,15 +157,18 @@ def main_((options,args)):
 		js = requests.post(args[0]+'/tasks',data=dict(data=json.dumps(tasks)),headers={'Content-type': 'application/json'})
 		
 	else:
-		run_client(args[0])
+		run_client(args[0],options)
 	
 def main((options,args)):
 	try:
 		main_((options,args))
 	except KeyboardInterrupt:
 		pass
-		
+
+	
 if __name__ == '__main__':
+	sys.path += [os.getcwd()]
+
 	from optparse import OptionParser
 	parser = OptionParser()
 
@@ -177,6 +184,7 @@ if __name__ == '__main__':
 	parser.add_option("-d", "--deploy",action='store',default=None,dest='deploy')
 	parser.add_option("-x", action='store',default=None,dest='x')
 	parser.add_option("-l","--launch", action='store',default=None,dest='launch')
+	parser.add_option("--retry_if_empty", action='store_true',default=None,dest='retry_if_empty')
 	
 	
 	parser.add_option("--post",action='store_true',default=None,dest='post')

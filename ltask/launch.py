@@ -6,6 +6,10 @@ def run_task(task):
 
 def write_scan_header(P, cls, out_dir):
     
+    try:
+    	os.mkdir(out_dir)
+    except:
+    	pass
 	write_scan_header.header = []
 	def write_header(params):
 		p2 = cls(params).processed_params()
@@ -16,7 +20,7 @@ def write_scan_header(P, cls, out_dir):
 	header = write_scan_header.header
 	header_fn = hashlib.md5(json.dumps(header,indent=4)).hexdigest()
 	header_fn = out_dir+'scan-'+ P.name + '-' +header_fn+'.json'
-	print header_fn
+	#print header_fn
 	
 	open(header_fn,'w').write(json.dumps(header,indent=4))
 	
@@ -25,9 +29,13 @@ def write_scan_header(P, cls, out_dir):
 
 def my_import(clspath):
     clspath = clspath.split('.')
-    Task = __import__(clspath[0])
-    for p in clspath[1:]:
-        Task = getattr(Task,p)
+    #print '.'.join(clspath[:-1])
+    
+    Task = __import__('.'.join(clspath[:-1]))
+    
+    for a in clspath[1:]:
+    	#print Task.__name__
+	    Task = getattr(Task,a)
     return Task
 
 
@@ -254,7 +262,7 @@ def params2task2map(params):
      
 def get_js_from_params(options,args):
     if not options.r:
-        clspath = 'run'
+        clspath = '.'.join(options.params.split('.')[:-1])
     else:
         clspath = options.r 
         
