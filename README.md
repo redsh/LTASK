@@ -1,5 +1,6 @@
 
-LTASK
+Tasks-In-A-Bottle
+
 =========
 
 Minimal distributed task queue, written in Python. 
@@ -8,7 +9,7 @@ Workers get tasks from a server using HTTP requests.
 
 A task is identified by a set of parameters.
 
-The server acts only as task parameters provider. 
+The server only provides task parameters, sending them as messages in a bottle.
 
 
 ====
