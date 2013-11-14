@@ -1,3 +1,16 @@
+'''
+LTASK
+Minimal distributed task queue, written in Python.
+Workers get tasks from a server using HTTP requests.
+A task is identified by a set of parameters.
+The server acts only as task parameters provider.
+
+https://github.com/redsh/LTASK/tree/master/ltask
+
+Copyright (C) 2013 Francesco "redsh" Rossi
+License: MIT
+'''
+
 import os,sys
 import itertools,copy
 #parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
