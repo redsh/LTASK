@@ -1,6 +1,5 @@
 
 Tasks-In-A-Bottle
-
 =========
 
 Minimal distributed task queue, written in Python. 
